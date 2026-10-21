@@ -9,5 +9,6 @@
         public int GroupId { get; set; }
         public Group Group { get; set; }
         public bool IsDeleted { get; set; } // Флаг логического удаления
+        public List<Grade> Grades { get; set; }
     }
 }

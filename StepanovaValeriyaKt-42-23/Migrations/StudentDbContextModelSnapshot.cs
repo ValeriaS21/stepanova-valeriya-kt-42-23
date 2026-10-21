@@ -21,6 +21,59 @@ namespace StepanovaValeriyaKt_42_23.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Discipline", b =>
+                {
+                    b.Property<int>("DisciplineId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("discipline_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DisciplineId"));
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("c_discipline_is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("c_discipline_name");
+
+                    b.HasKey("DisciplineId");
+
+                    b.ToTable("cd_discipline", (string)null);
+                });
+
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Grade", b =>
+                {
+                    b.Property<int>("GradeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("grade_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GradeId"));
+
+                    b.Property<int>("DisciplineId")
+                        .HasColumnType("integer")
+                        .HasColumnName("f_discipline_id");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer")
+                        .HasColumnName("f_student_id");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("integer")
+                        .HasColumnName("c_grade_value");
+
+                    b.HasKey("GradeId");
+
+                    b.HasIndex("DisciplineId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("cd_grade", (string)null);
+                });
+
             modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Group", b =>
                 {
                     b.Property<int>("GroupId")
@@ -31,6 +84,11 @@ namespace StepanovaValeriyaKt_42_23.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GroupId"));
 
+                    b.Property<int>("Course")
+                        .HasColumnType("integer")
+                        .HasColumnName("c_group_course")
+                        .HasComment("Курс");
+
                     b.Property<string>("GroupName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -39,14 +97,43 @@ namespace StepanovaValeriyaKt_42_23.Migrations
                         .HasComment("Название группы");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bool")
-                        .HasColumnName("b_deleted")
-                        .HasComment("Флаг логического удаления");
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("SpecialnostId")
+                        .HasColumnType("integer")
+                        .HasColumnName("f_specialnost_id")
+                        .HasComment("Идентификатор специальности");
 
                     b.HasKey("GroupId")
                         .HasName("pk_cd_group_group_id");
 
+                    b.HasIndex("SpecialnostId");
+
                     b.ToTable("cd_group", (string)null);
+                });
+
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Specialnost", b =>
+                {
+                    b.Property<int>("SpecialnostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("specialnost_id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SpecialnostId"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("c_specialnost_code");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("c_specialnost_title");
+
+                    b.HasKey("SpecialnostId");
+
+                    b.ToTable("cd_specialnost", (string)null);
                 });
 
             modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Student", b =>
@@ -98,6 +185,37 @@ namespace StepanovaValeriyaKt_42_23.Migrations
                     b.ToTable("cd_student", (string)null);
                 });
 
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Grade", b =>
+                {
+                    b.HasOne("StepanovaValeriyaKt_42_23.Models.Discipline", "Discipline")
+                        .WithMany("Grades")
+                        .HasForeignKey("DisciplineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StepanovaValeriyaKt_42_23.Models.Student", "Student")
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Discipline");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Group", b =>
+                {
+                    b.HasOne("StepanovaValeriyaKt_42_23.Models.Specialnost", "Specialnost")
+                        .WithMany("Groups")
+                        .HasForeignKey("SpecialnostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_f_specialnost_id");
+
+                    b.Navigation("Specialnost");
+                });
+
             modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Student", b =>
                 {
                     b.HasOne("StepanovaValeriyaKt_42_23.Models.Group", "Group")
@@ -108,6 +226,21 @@ namespace StepanovaValeriyaKt_42_23.Migrations
                         .HasConstraintName("fk_f_group_id");
 
                     b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Discipline", b =>
+                {
+                    b.Navigation("Grades");
+                });
+
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Specialnost", b =>
+                {
+                    b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("StepanovaValeriyaKt_42_23.Models.Student", b =>
+                {
+                    b.Navigation("Grades");
                 });
 #pragma warning restore 612, 618
         }

@@ -28,12 +28,26 @@ namespace StepanovaValeriyaKt_42_23.Database.Configurations
                 .HasColumnType(ColumnType.String).HasMaxLength(100)
                 .HasComment("Название группы");
 
-            builder.Property(p => p.IsDeleted)
-                .HasColumnName("b_deleted")
-                .HasColumnType(ColumnType.Bool)
-                .HasComment("Флаг логического удаления");
+        
+
+            // 1. Добавляем курс
+            builder.Property(p => p.Course)
+                .HasColumnName("c_group_course")
+                .HasComment("Курс");
+
+            // 2. Добавляем колонку для связи со специальностью
+            builder.Property(p => p.SpecialnostId)
+                .HasColumnName("f_specialnost_id")
+                .HasComment("Идентификатор специальности");
 
             builder.ToTable(TableName);
+
+            // 3. Настраиваем саму связь (одна специальность - много групп)
+            builder.HasOne(p => p.Specialnost)
+                .WithMany(t => t.Groups)
+                .HasForeignKey(p => p.SpecialnostId)
+                .HasConstraintName("fk_f_specialnost_id")
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
